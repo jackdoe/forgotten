@@ -18,7 +18,7 @@ const (
 	Digits = "0123456789"
 
 	// Symbols is the list of symbols.
-	Symbols = "~!@#$%^&*()_+`-={}|[]\\:\"<>?,./"
+	Symbols = "._()"
 )
 
 var (

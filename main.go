@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"golang.org/x/crypto/ssh/terminal"
 	"io"
 	"io/ioutil"
 	"log"
@@ -18,6 +17,8 @@ import (
 	"path"
 	"syscall"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type Password struct {
@@ -159,7 +160,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	ran, err := Generate(32, 10, 10, false, false)
+	ran, err := Generate(32, 2, 2, false, false)
 	if err != nil {
 		log.Fatal(err)
 	}
