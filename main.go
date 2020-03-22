@@ -122,6 +122,8 @@ func main() {
 	home := getHome()
 
 	var pkey = flag.String("key", "generic", "get password for key (e.g gmail/jack)")
+	var pvalue = flag.String("value", "", "set password for this key, empty means generate, - means ask")
+	var pfmt = flag.String("fmt", "%s", "print the password with this fmt")
 	var pfile = flag.String("file", path.Join(home, ".forgotten.aes"), "file to read/write")
 	var ppass = flag.String("passphrase", "-", "passphrase input (- for stdin)")
 
@@ -156,14 +158,33 @@ func main() {
 	}
 	p, ok := passwords.Data[*pkey]
 	if ok {
-		fmt.Printf("%s\n", p.Value)
+		fmt.Printf(*pfmt+"\n", p.Value)
 		os.Exit(0)
 	}
-
-	ran, err := Generate(32, 2, 2, false, false)
-	if err != nil {
-		log.Fatal(err)
+	var ran string
+	var err error
+	output := false
+	if *pvalue == "" {
+		ran, err = Generate(32, 2, 2, false, false)
+		if err != nil {
+			log.Fatal(err)
+		}
+		output = true
+	} else {
+		if *pvalue == "-" {
+			fmt.Fprintf(os.Stderr, "Type password for %v: ", *pkey)
+			bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				ran = string(bytePassword)
+			}
+			fmt.Fprint(os.Stderr, "\n")
+		} else {
+			ran = *pvalue
+		}
 	}
+
 	passwords.Data[*pkey] = &Password{
 		Value:            ran,
 		CreatedTimeStamp: uint64(time.Now().UnixNano()),
@@ -174,6 +195,8 @@ func main() {
 		log.Fatal(err)
 	}
 	encryptFile(*pfile, bpasswords, masterPassword)
-	fmt.Printf("%s\n", ran)
+	if output {
+		fmt.Printf(*pfmt+"\n", ran)
+	}
 	os.Exit(0)
 }
