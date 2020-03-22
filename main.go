@@ -122,15 +122,15 @@ func main() {
 	home := getHome()
 
 	var pkey = flag.String("key", "generic", "get password for key (e.g gmail/jack)")
-	var pmutt = flag.String("mutt-key", "", `output the password as set $mutt_key = "password"`)
+	var pmutt = flag.Bool("mutt", false, `output the password as set my_pass = "password"`)
 	var pvalue = flag.String("value", "", "set password for this key, empty means generate, - means ask")
 	var pfmt = flag.String("fmt", "%s", "print the password with this fmt")
 	var pfile = flag.String("file", path.Join(home, ".forgotten.aes"), "file to read/write")
 	var ppass = flag.String("passphrase", "-", "passphrase input (- for stdin)")
 
 	flag.Parse()
-	if *pmutt != "" {
-		*pfmt = fmt.Sprintf(`set %s = "%%s"`, *pmutt)
+	if *pmutt {
+		*pfmt = `set my_pass = "%s"`
 	}
 	var masterPassword string
 	if *ppass == "-" {
